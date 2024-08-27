@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String
+  price       Int
+  image       String
+  category    String
+  status      Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  DELIVERED
+  CANCELLED
+}
+
+enum UserRoles {
+  DESARROLLADOR
+  ADMINISTRADOR
+  CAJA
+  COCINA
+  CADETE
+  USER
+}
+
+enum DeliveryMethod {
+  PICKUP
+  DELIVERY
+}
+
+model Order {
+  id             String      @id @default(uuid())
+  totalAmount    Float
+  totalItems     Int
+  status         OrderStatus
+  paid           Boolean     @default(false)
+  paidAt         DateTime?
+  stripeChargeId String?
+  createdAt      DateTime    @default(now())
+  updateAt       DateTime    @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  guestName      String? // Para usuarios no autenticados
+  guestPhone     String?
+  guestAddress   String?
+  deliveryMethod DeliveryMethod
+
+  OrderItem    OrderItem[]
+  OrderReceipt OrderReceipt?
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  productId Int
+  quantity  Int
+  price     Float
+
+  Order   Order?  @relation(fields: [orderId], references: [id])
+  orderId String?
+}
+
+model OrderReceipt {
+  id String @id @default(uuid())
+
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String @unique //relacion uno a uno
+
+  receiptUrl String
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  name           String
+  password       String
+  phone          String? // Campos opcionales
+  address        String? // Opcional para permitir que los usuarios elijan no guardarlo
+  deliveryMethod DeliveryMethod? // Puede ser algo como "pickup" o "delivery"
+  status         Boolean         @default(true)
+
+  orders Order[]
+  roles  UserRoles[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
