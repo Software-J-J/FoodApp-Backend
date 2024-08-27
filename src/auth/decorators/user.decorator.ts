@@ -8,12 +8,12 @@ export const User = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
 
-    if (!request.user) {
-      throw new InternalServerErrorException(
-        'User Not Found In Request (Authguard call',
-      );
-    }
+    // if (!request.user) {
+    //   throw new InternalServerErrorException(
+    //     'User Not Found In Request (Authguard call',
+    //   );
+    // }
 
-    return request.user;
+    return request.user || null;
   },
 );

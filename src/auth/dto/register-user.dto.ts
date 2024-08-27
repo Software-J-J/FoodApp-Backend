@@ -1,18 +1,15 @@
 import {
   IsEmail,
   IsEnum,
-  IsNumber,
   IsOptional,
   IsString,
   IsStrongPassword,
   Matches,
-  Max,
   MaxLength,
-  Min,
+  MinLength,
 } from 'class-validator';
-import { UserRolesDto } from './user-roles.dto';
-import { Type } from 'class-transformer';
-import { UserRoles } from '@prisma/client';
+
+import { DeliveryMethod, UserRoles } from '@prisma/client';
 
 export class RegisterUserDto {
   @IsString()
@@ -23,24 +20,29 @@ export class RegisterUserDto {
   email: string;
 
   @IsString()
+  @MinLength(5)
   @IsStrongPassword()
   password: string;
 
   @IsString()
-  @IsOptional()
   @Matches(/^\+?[1-9]\d{1,14}$/, {
     message: 'Phone number is not valid',
   })
-  phone?: string;
+  phone: string;
 
   @IsString()
-  @IsOptional()
   @MaxLength(50)
   address: string;
 
   @IsEnum(UserRoles, {
-    each: true, // Esto valida cada elemento si roles es un array
+    each: true,
     message: `Valid roles are ${Object.values(UserRoles).join(', ')}`,
   })
   roles: UserRoles[] = [UserRoles.USER];
+
+  @IsEnum(DeliveryMethod, {
+    each: true,
+    message: `Valid roles are ${Object.values(DeliveryMethod).join(', ')}`,
+  })
+  deliveryMethod: DeliveryMethod[] = [DeliveryMethod.DELIVERY];
 }
