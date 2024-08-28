@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpStatus,
   Injectable,
   Logger,
@@ -14,12 +15,14 @@ import {
 
 @Injectable()
 export class OrdersService extends PrismaClient implements OnModuleInit {
+
   private readonly logger = new Logger('OrdersDB');
+  
   onModuleInit() {
     this.$connect();
     this.logger.log('Orders Database Connect.');
   }
-  async create(createOrderDto: CreateOrderDto) {
+  async create(createOrderDto: CreateOrderDto, user?: any) {
     try {
       const productIds = createOrderDto.items.map((item) => item.productId);
 
@@ -37,11 +40,27 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
         return acc + orderItem.quantity;
       }, 0);
 
+      const orderData = user
+        ? {
+            userId: user.id,
+            guestName: user.name,
+            guestPhone: user.phone,
+            guestAddress: user.address,
+          }
+        : {
+            userId: null,
+            guestName: createOrderDto.name,
+            guestPhone: createOrderDto.phone,
+            guestAddress: createOrderDto.address,
+          };
+
       const order = await this.order.create({
         data: {
+          ...orderData,
           totalAmount: totalAmount,
           totalItems: totalItems,
           status: 'PENDING',
+          deliveryMethod: createOrderDto.deliveryMethod || user.deliveryMethod,
           OrderItem: {
             createMany: {
               data: createOrderDto.items.map((orderItem) => ({

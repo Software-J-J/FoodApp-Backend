@@ -6,6 +6,8 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import {
@@ -13,14 +15,23 @@ import {
   CreateOrderDto,
   OrderPaginationDto,
 } from './dto';
+import { User } from 'src/auth/decorators';
+import { CurrentUser } from 'src/auth/interface';
+import { OrderAuthGuard } from 'src/auth/guards';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @UseGuards(OrderAuthGuard)
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  create(@Body() createOrderDto: CreateOrderDto, @User() user?: CurrentUser) {
+    if (!user) {
+      if (!createOrderDto.name || !createOrderDto.phone || !createOrderDto.address) {
+        throw new BadRequestException('Name, phone, and address are required for guest orders');
+      }
+    }
+    return this.ordersService.create(createOrderDto, user);
   }
 
   @Get()

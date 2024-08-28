@@ -6,7 +6,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { LoginUserDto, RegisterUserDto } from './dto';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserRoles } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interface/jwt-payload.interface';
@@ -50,7 +50,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
   }
 
   async registerUser(registerUserDto: RegisterUserDto) {
-    const { email, name, password } = registerUserDto;
+    const { email, name, password, phone, address, roles } = registerUserDto;
 
     try {
       const user = await this.user.findUnique({
@@ -71,6 +71,9 @@ export class AuthService extends PrismaClient implements OnModuleInit {
           email: email,
           password: bcrypt.hashSync(password, 10),
           name: name,
+          phone: phone,
+          address: address,
+          roles: roles || [UserRoles.USER],
         },
       });
 
