@@ -7,5 +7,6 @@ import { AuthModule } from 'src/auth/auth.module';
   controllers: [OrdersController],
   providers: [OrdersService],
   imports: [AuthModule],
+  exports: [OrdersService], // Exportar OrdersService
 })
 export class OrdersModule {}
