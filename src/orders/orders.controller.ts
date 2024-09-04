@@ -15,9 +15,9 @@ import {
   CreateOrderDto,
   OrderPaginationDto,
 } from './dto';
-import { User } from 'src/auth/decorators';
+import { Roles, User } from 'src/auth/decorators';
 import { CurrentUser } from 'src/auth/interface';
-import { OrderAuthGuard } from 'src/auth/guards';
+import { AuthGuard, OrderAuthGuard, RolesGuard } from 'src/auth/guards';
 
 @Controller('orders')
 export class OrdersController {
@@ -27,14 +27,22 @@ export class OrdersController {
   @Post()
   create(@Body() createOrderDto: CreateOrderDto, @User() user?: CurrentUser) {
     if (!user) {
-      if (!createOrderDto.name || !createOrderDto.phone || !createOrderDto.address) {
-        throw new BadRequestException('Name, phone, and address are required for guest orders');
+      if (
+        !createOrderDto.name ||
+        !createOrderDto.phone ||
+        !createOrderDto.address
+      ) {
+        throw new BadRequestException(
+          'Name, phone, and address are required for guest orders',
+        );
       }
     }
     return this.ordersService.create(createOrderDto, user);
   }
 
   @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   findAll(@Param() orderPaginationDto: OrderPaginationDto) {
     return this.ordersService.findAll(orderPaginationDto);
   }

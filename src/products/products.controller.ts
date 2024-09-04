@@ -10,16 +10,22 @@ import {
   UploadedFile,
   UseInterceptors,
   UseGuards,
+  Req,
+  ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto';
 import { PaginationDto } from 'src/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { Roles, User } from 'src/auth/decorators';
+import { CurrentUser } from 'src/auth/interface';
+import { RolesGuard } from 'src/auth/guards';
 
 @Controller('products')
+@UseGuards(RolesGuard)
 export class ProductsController {
   constructor(
     private readonly productsService: ProductsService,
@@ -32,18 +38,29 @@ export class ProductsController {
   async create(
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() file: Express.Multer.File,
+    @User() user: CurrentUser,
   ) {
     const uploadResult = await this.cloudinaryService.uploadImage(file);
     createProductDto.image = uploadResult.url;
+
+    const businessId = user.businessId;
+
+    // Asigna el businessId al DTO
+    createProductDto.businessId = businessId;
+
     return this.productsService.create(createProductDto);
   }
 
-  @Get()
-  findAll(@Param() paginationDto: PaginationDto) {
-    return this.productsService.findAll(paginationDto);
+  @Get(':businessId')
+  @Roles('USER', 'ADMIN')
+  findAll(
+    @Query() paginationDto: PaginationDto,
+    @Param('businessId', ParseUUIDPipe) businessId: string,
+  ) {
+    return this.productsService.findAll(paginationDto, businessId);
   }
 
-  @Get(':id')
+  @Get('id/:id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);
   }

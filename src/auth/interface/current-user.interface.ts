@@ -6,4 +6,5 @@ export interface CurrentUser {
   address: string;
   roles: string;
   deliveryMethod: string;
+  businessId: string;
 }

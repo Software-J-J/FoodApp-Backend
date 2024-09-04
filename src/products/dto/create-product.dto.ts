@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  IsUUID,
   Max,
   MaxLength,
   Min,
@@ -35,6 +36,10 @@ export class CreateProductDto {
   @IsOptional()
   @IsUrl()
   public image: string;
+
+  @IsUUID()
+  @IsOptional()
+  businessId: string;
 
   @IsBoolean()
   @IsOptional()

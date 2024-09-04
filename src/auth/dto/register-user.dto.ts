@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   IsStrongPassword,
+  IsUUID,
   Matches,
   MaxLength,
   MinLength,
@@ -44,5 +45,9 @@ export class RegisterUserDto {
     each: true,
     message: `Valid roles are ${Object.values(DeliveryMethod).join(', ')}`,
   })
-  deliveryMethod: DeliveryMethod[] = [DeliveryMethod.DELIVERY];
+  deliveryMethod: DeliveryMethod = DeliveryMethod.DELIVERY;
+
+  @IsUUID()
+  @IsOptional()
+  businessId: string;
 }

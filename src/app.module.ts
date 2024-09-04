@@ -5,8 +5,9 @@ import { OrdersModule } from './orders/orders.module';
 import { AuthModule } from './auth/auth.module';
 import { ReportsModule } from './reports/reports.module';
 import { PrinterModule } from './printer/printer.module';
+import { BusinessModule } from './business/business.module';
 
 @Module({
-  imports: [ProductsModule, CloudinaryModule, OrdersModule, AuthModule, ReportsModule, PrinterModule],
+  imports: [ProductsModule, CloudinaryModule, OrdersModule, AuthModule, ReportsModule, PrinterModule, BusinessModule],
 })
 export class AppModule {}
