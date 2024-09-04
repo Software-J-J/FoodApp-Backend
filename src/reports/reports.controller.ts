@@ -1,7 +1,10 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { Response } from 'express';
 import { OrdersService } from 'src/orders/orders.service';
+import { RolesUserList } from 'src/auth/enum/roles-enum';
+import { Roles } from 'src/auth/decorators';
+import { AuthGuard, RolesGuard } from 'src/auth/guards';
 @Controller('reports')
 export class ReportsController {
   constructor(
@@ -19,6 +22,8 @@ export class ReportsController {
   }
 
   @Get('order/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
   async printOrder(@Param('id') id: string, @Res() response: Response) {
     const order = await this.ordersService.findOne(id);
 

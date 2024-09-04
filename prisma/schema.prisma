@@ -49,6 +49,16 @@ enum DeliveryMethod {
   DELIVERY
 }
 
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
 model Order {
   id             String      @id @default(uuid())
   totalAmount    Float
@@ -122,10 +132,24 @@ model Business {
   email       String   @unique
   logo        String?
   colors      String[]
+  redes       String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  products Product[]
-  users    User[]
+  products     Product[]
+  users        User[]
+  OpeningHours OpeningHours[]
+}
+
+model OpeningHours {
+  id         String    @id @default(uuid())
+  dayOfWeek  DayOfWeek // Usando el enum para el día de la semana
+  openTime   String // Hora de apertura (en formato HH:MM)
+  closeTime  String // Hora de cierre (en formato HH:MM)
+  Business   Business  @relation(fields: [businessId], references: [id])
+  businessId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

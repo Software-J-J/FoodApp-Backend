@@ -9,12 +9,16 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { BusinessService } from './business.service';
 import { CreateBusinessDto, UpdateBusinessDto } from './dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PaginationDto } from 'src/common';
+import { AuthGuard, RolesGuard } from 'src/auth/guards';
+import { Roles } from 'src/auth/decorators';
+import { RolesUserList } from 'src/auth/enum/roles-enum';
 
 @Controller('business')
 export class BusinessController {
@@ -22,17 +26,6 @@ export class BusinessController {
     private readonly businessService: BusinessService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
-
-  @Post()
-  @UseInterceptors(FileInterceptor('logo'))
-  async create(
-    @Body() createBusinessDto: CreateBusinessDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    const uploadResult = await this.cloudinaryService.uploadImage(file);
-    createBusinessDto.logo = uploadResult.url;
-    return this.businessService.create(createBusinessDto);
-  }
 
   @Get()
   findAll(@Param() paginationDto: PaginationDto) {
@@ -44,6 +37,21 @@ export class BusinessController {
     return this.businessService.findOne(id);
   }
 
+  @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RolesUserList.DESARROLLADOR)
+  @UseInterceptors(FileInterceptor('logo'))
+  async create(
+    @Body() createBusinessDto: CreateBusinessDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const uploadResult = await this.cloudinaryService.uploadImage(file);
+    createBusinessDto.logo = uploadResult.url;
+    return this.businessService.create(createBusinessDto);
+  }
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -52,6 +60,8 @@ export class BusinessController {
     return this.businessService.update(updateBusinessDto.id, updateBusinessDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RolesUserList.DESARROLLADOR)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.businessService.remove(+id);

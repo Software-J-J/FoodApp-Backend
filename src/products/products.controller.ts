@@ -23,17 +23,18 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { Roles, User } from 'src/auth/decorators';
 import { CurrentUser } from 'src/auth/interface';
 import { RolesGuard } from 'src/auth/guards';
+import { RolesUserList } from 'src/auth/enum/roles-enum';
 
 @Controller('products')
-@UseGuards(RolesGuard)
 export class ProductsController {
   constructor(
     private readonly productsService: ProductsService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  @UseGuards(AuthGuard)
   @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
   @UseInterceptors(FileInterceptor('image'))
   async create(
     @Body() createProductDto: CreateProductDto,
@@ -52,7 +53,6 @@ export class ProductsController {
   }
 
   @Get(':businessId')
-  @Roles('USER', 'ADMIN')
   findAll(
     @Query() paginationDto: PaginationDto,
     @Param('businessId', ParseUUIDPipe) businessId: string,
@@ -66,11 +66,15 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
   update(@Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(updateProductDto.id, updateProductDto);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id);
   }
