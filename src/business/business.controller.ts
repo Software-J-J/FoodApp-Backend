@@ -39,14 +39,19 @@ export class BusinessController {
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(RolesUserList.DESARROLLADOR)
+  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.USER)
   @UseInterceptors(FileInterceptor('logo'))
   async create(
     @Body() createBusinessDto: CreateBusinessDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const uploadResult = await this.cloudinaryService.uploadImage(file);
-    createBusinessDto.logo = uploadResult.url;
+    if (!file) {
+      createBusinessDto.logo =
+        'https://cdn.pixabay.com/photo/2018/03/19/02/52/logo-instagram-3238899_1280.png';
+    } else {
+      const uploadResult = await this.cloudinaryService.uploadImage(file);
+      createBusinessDto.logo = uploadResult.url;
+    }
     return this.businessService.create(createBusinessDto);
   }
 

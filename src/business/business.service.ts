@@ -5,8 +5,7 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { CreateBusinessDto } from './dto/create-business.dto';
-import { UpdateBusinessDto } from './dto/update-business.dto';
+import { CreateBusinessDto, UpdateBusinessDto } from './dto';
 import { PrismaClient } from '@prisma/client';
 import { PaginationDto } from 'src/common';
 
@@ -35,7 +34,23 @@ export class BusinessService extends PrismaClient implements OnModuleInit {
       }
 
       const newBussines = await this.business.create({
-        data: createBusinessDto,
+        data: {
+          name: createBusinessDto.name,
+          description: createBusinessDto.description,
+          address: createBusinessDto.address,
+          phone: createBusinessDto.phone,
+          email: createBusinessDto.email,
+          logo: createBusinessDto.logo,
+          colors: createBusinessDto.colors,
+          redes: createBusinessDto.redes,
+          OpeningHours: {
+            create: createBusinessDto.openingHours.map((hours) => ({
+              dayOfWeek: hours.dayOfWeek,
+              openTime: hours.openTime,
+              closeTime: hours.closeTime,
+            })),
+          },
+        },
       });
 
       return newBussines;
@@ -69,6 +84,15 @@ export class BusinessService extends PrismaClient implements OnModuleInit {
   async findOne(id: string) {
     const business = await this.business.findFirst({
       where: { id },
+      include: {
+        OpeningHours: {
+          select: {
+            dayOfWeek: true,
+            openTime: true,
+            closeTime: true,
+          },
+        },
+      },
     });
 
     if (!business) {

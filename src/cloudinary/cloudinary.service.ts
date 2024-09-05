@@ -6,7 +6,9 @@ import { CloudinaryResponseDto } from './dto/cloudinary-response.dto';
 @Injectable()
 export class CloudinaryService {
   async uploadImage(file: Express.Multer.File): Promise<CloudinaryResponseDto> {
+
     return new Promise<CloudinaryResponseDto>((resolve, reject) => {
+      
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder: 'FoodApp' },
         (error, result) => {

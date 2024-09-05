@@ -34,7 +34,11 @@ export class ProductsController {
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
+  @Roles(
+    RolesUserList.DESARROLLADOR,
+    RolesUserList.ADMINISTRADOR,
+    RolesUserList.USER,
+  )
   @UseInterceptors(FileInterceptor('image'))
   async create(
     @Body() createProductDto: CreateProductDto,

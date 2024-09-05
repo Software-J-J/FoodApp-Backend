@@ -8,7 +8,11 @@ import {
   MaxLength,
   MinLength,
   ArrayNotEmpty,
+  ArrayMinSize,
+  ValidateNested,
 } from 'class-validator';
+import { OpeningHoursDto } from './openingHours.dto';
+import { Type } from 'class-transformer';
 
 export class CreateBusinessDto {
   @IsString()
@@ -45,4 +49,16 @@ export class CreateBusinessDto {
   @ArrayNotEmpty()
   @IsString({ each: true })
   colors: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  redes: string[];
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => OpeningHoursDto)
+  openingHours: OpeningHoursDto[];
 }
