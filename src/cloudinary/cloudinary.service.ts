@@ -8,14 +8,13 @@ export class CloudinaryService {
   async uploadImage(file: Express.Multer.File): Promise<CloudinaryResponseDto> {
     return new Promise<CloudinaryResponseDto>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'FoodApp' }, // Puedes especificar una carpeta en Cloudinary
+        { folder: 'FoodApp' },
         (error, result) => {
           if (error) return reject(error);
           resolve(result);
         },
       );
 
-      // Convertimos el buffer a stream y lo pasamos al stream de Cloudinary
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }
