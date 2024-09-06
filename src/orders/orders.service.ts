@@ -15,9 +15,8 @@ import {
 
 @Injectable()
 export class OrdersService extends PrismaClient implements OnModuleInit {
-
   private readonly logger = new Logger('OrdersDB');
-  
+
   onModuleInit() {
     this.$connect();
     this.logger.log('Orders Database Connect.');

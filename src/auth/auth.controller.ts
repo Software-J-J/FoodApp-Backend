@@ -1,6 +1,15 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Patch,
+  ParseUUIDPipe,
+  Param,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserDto, RegisterUserDto } from './dto';
+import { LoginUserDto, RegisterUserDto, UpdateUserDto } from './dto';
 import { AuthGuard } from './guards/auth.guard';
 import { Token, User } from './decorators';
 import { CurrentUser } from './interface';
@@ -23,5 +32,19 @@ export class AuthController {
   @Get('verify')
   verifyToken(@User() user: CurrentUser, @Token() token: string) {
     return this.authService.verifyToken(token);
+  }
+
+
+
+  @Get()
+  findAll() {
+    return this.authService.findAll();
+  }
+  @Patch(':id')
+  updateUser(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.authService.update(id, updateUserDto);
   }
 }

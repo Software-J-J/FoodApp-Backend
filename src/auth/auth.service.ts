@@ -5,7 +5,7 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { LoginUserDto, RegisterUserDto } from './dto';
+import { LoginUserDto, RegisterUserDto, UpdateUserDto } from './dto';
 import { DeliveryMethod, PrismaClient, UserRoles } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -138,5 +138,16 @@ export class AuthService extends PrismaClient implements OnModuleInit {
         message: error.message,
       });
     }
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    return this.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
+  }
+
+  async findAll() {
+    return await this.user.findMany();
   }
 }
