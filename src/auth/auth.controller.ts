@@ -34,8 +34,6 @@ export class AuthController {
     return this.authService.verifyToken(token);
   }
 
-
-
   @Get()
   findAll() {
     return this.authService.findAll();
