@@ -18,23 +18,7 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     this.$connect();
     this.logger.log('Products DB Connect');
   }
-  // async create(createProductDto: CreateProductDto) {
-  //   const { category, ...rest } = createProductDto;
 
-  //   const categoryName = await this.category.findUnique({
-  //     where: { name: category },
-  //   });
-
-  //   const { id } = categoryName;
-
-  //   return this.product.create({
-  //     data: {
-  //       ...rest,
-  //       businessId: createProductDto.businessId,
-  //       category: id,
-  //     },
-  //   });
-  // }
   async create(createProductDto: CreateProductDto) {
     const { category, businessId, ...rest } = createProductDto;
 
@@ -77,6 +61,13 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     return {
       data: await this.product.findMany({
         where: { businessId: businessId },
+        include: {
+          category: {
+            select: {
+              name: true,
+            },
+          },
+        },
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -105,13 +96,11 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
   async update(id: number, updateProductDto: UpdateProductDto) {
     const { category, businessId, ...data } = updateProductDto;
 
-  
     await this.product.findUniqueOrThrow({
       where: { id },
     });
 
     const updateData: any = { ...data };
-
 
     if (category) {
       const categoryRecord = await this.category.findUnique({

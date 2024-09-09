@@ -49,8 +49,7 @@ export class ProductsController {
     createProductDto.image = uploadResult.url;
 
     const businessId = user.businessId;
-
-    // Asigna el businessId al DTO
+    
     createProductDto.businessId = businessId;
 
     return this.productsService.create(createProductDto);

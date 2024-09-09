@@ -5,9 +5,8 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaClient } from '@prisma/client';
+import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 
 @Injectable()
 export class CategoryService extends PrismaClient implements OnModuleInit {
@@ -16,17 +15,30 @@ export class CategoryService extends PrismaClient implements OnModuleInit {
     this.$connect();
     this.logger.log('Category DB Connect');
   }
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  async create(createCategoryDto: CreateCategoryDto) {
+    return await this.category.create({
+      data: {
+        ...createCategoryDto,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll() {
+    return await this.category.findMany({
+      where: { status: true },
+    });
   }
 
   async findOne(id: number) {
     const category = await this.category.findFirst({
       where: { id, status: true },
+      include: {
+        products: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     if (!category)
@@ -38,11 +50,25 @@ export class CategoryService extends PrismaClient implements OnModuleInit {
     return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    await this.findOne(id);
+
+    return await this.category.update({
+      where: { id },
+      data: updateCategoryDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    await this.findOne(id);
+
+    const category = await this.category.update({
+      where: { id },
+      data: {
+        status: false,
+      },
+    });
+
+    return category;
   }
 }
