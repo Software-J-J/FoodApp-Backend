@@ -9,7 +9,6 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaClient } from '@prisma/client';
 import { PaginationDto } from 'src/common';
-import { BusinessDtoProducts } from 'src/orders/dto/business.dto';
 
 @Injectable()
 export class ProductsService extends PrismaClient implements OnModuleInit {
@@ -19,9 +18,49 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     this.$connect();
     this.logger.log('Products DB Connect');
   }
-  create(createProductDto: CreateProductDto) {
+  // async create(createProductDto: CreateProductDto) {
+  //   const { category, ...rest } = createProductDto;
+
+  //   const categoryName = await this.category.findUnique({
+  //     where: { name: category },
+  //   });
+
+  //   const { id } = categoryName;
+
+  //   return this.product.create({
+  //     data: {
+  //       ...rest,
+  //       businessId: createProductDto.businessId,
+  //       category: id,
+  //     },
+  //   });
+  // }
+  async create(createProductDto: CreateProductDto) {
+    const { category, businessId, ...rest } = createProductDto;
+
+    const categoryRecord = await this.category.findUnique({
+      where: { name: category },
+    });
+
+    if (!categoryRecord) {
+      throw new NotFoundException('Category not found');
+    }
+
+    const productData: any = {
+      ...rest,
+      category: {
+        connect: { id: categoryRecord.id },
+      },
+    };
+
+    if (businessId) {
+      productData.business = {
+        connect: { id: businessId },
+      };
+    }
+
     return this.product.create({
-      data: { ...createProductDto, businessId: createProductDto.businessId },
+      data: productData,
     });
   }
 
@@ -53,6 +92,7 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     const product = await this.product.findFirst({
       where: { id, status: true },
     });
+
     if (!product)
       throw new NotFoundException({
         message: `Product with id #${id} not found`,
@@ -63,12 +103,39 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const { id: _, ...data } = updateProductDto;
-    await this.findOne(id);
+    const { category, businessId, ...data } = updateProductDto;
+
+  
+    await this.product.findUniqueOrThrow({
+      where: { id },
+    });
+
+    const updateData: any = { ...data };
+
+
+    if (category) {
+      const categoryRecord = await this.category.findUnique({
+        where: { name: category },
+      });
+
+      if (!categoryRecord) {
+        throw new NotFoundException('Category not found');
+      }
+
+      updateData.category = {
+        connect: { id: categoryRecord.id },
+      };
+    }
+
+    if (businessId) {
+      updateData.business = {
+        connect: { id: businessId },
+      };
+    }
 
     return this.product.update({
       where: { id },
-      data: data,
+      data: updateData,
     });
   }
 

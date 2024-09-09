@@ -6,8 +6,9 @@ import { AuthModule } from './auth/auth.module';
 import { ReportsModule } from './reports/reports.module';
 import { PrinterModule } from './printer/printer.module';
 import { BusinessModule } from './business/business.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
-  imports: [ProductsModule, CloudinaryModule, OrdersModule, AuthModule, ReportsModule, PrinterModule, BusinessModule],
+  imports: [ProductsModule, CloudinaryModule, OrdersModule, AuthModule, ReportsModule, PrinterModule, BusinessModule, CategoryModule],
 })
 export class AppModule {}

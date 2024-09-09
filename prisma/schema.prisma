@@ -16,6 +16,7 @@ datasource db {
 model Category {
   id       Int       @id @default(autoincrement())
   name     String    @unique
+  status   Boolean   @default(true)
   products Product[]
 }
 

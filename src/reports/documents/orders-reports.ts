@@ -6,7 +6,6 @@ import {
 import { CreateBusinessDto } from 'src/business/dto';
 import { getImageAsBase64 } from '../helpers/image-base';
 import { Formatter } from '../helpers/formatter';
-import { text } from 'stream/consumers';
 
 export const orderReports = async (
   order: any,
