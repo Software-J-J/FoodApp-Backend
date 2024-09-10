@@ -38,7 +38,7 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     };
 
     if (businessId) {
-      productData.business = {
+      productData.Business = {
         connect: { id: businessId },
       };
     }
