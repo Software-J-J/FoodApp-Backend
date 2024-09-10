@@ -118,4 +118,39 @@ export class BusinessService extends PrismaClient implements OnModuleInit {
   remove(id: number) {
     return `This action removes a #${id} business`;
   }
+
+  async isBusinessOpen(businessId: string): Promise<boolean> {
+    const currentDate = new Date();
+    const currentDay = currentDate
+      .toLocaleString('es-ES', { weekday: 'long' })
+      .toUpperCase();
+    const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+
+    const specialHoliday = await this.openingHours.findFirst({
+      where: {
+        businessId: businessId,
+        holiday: true,
+      },
+    });
+
+    if (specialHoliday) {
+      return false;
+    }
+
+    const openingHours = await this.openingHours.findFirst({
+      where: {
+        businessId: businessId,
+        holiday: false,
+      },
+    });
+
+    if (!openingHours) {
+      return false;
+    }
+
+    const isOpen =
+      currentTime >= openingHours.openTime &&
+      currentTime <= openingHours.closeTime;
+    return isOpen;
+  }
 }
