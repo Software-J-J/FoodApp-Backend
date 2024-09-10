@@ -1,10 +1,10 @@
-import { UserRoles } from '@prisma/client';
+import { RoleEnum } from '@prisma/client';
 
 export const RolesUserList = {
-  DESARROLLADOR: UserRoles.DESARROLLADOR,
-  ADMINISTRADOR: UserRoles.ADMINISTRADOR,
-  CAJA: UserRoles.CAJA,
-  COCINA: UserRoles.COCINA,
-  CADETE: UserRoles.CADETE,
-  USER: UserRoles.USER,
+  DESARROLLADOR: RoleEnum.DESARROLLADOR,
+  ADMINISTRADOR: RoleEnum.ADMINISTRADOR,
+  CAJA: RoleEnum.CAJA,
+  COCINA: RoleEnum.COCINA,
+  CADETE: RoleEnum.CADETE,
+  USER: RoleEnum.USER,
 };

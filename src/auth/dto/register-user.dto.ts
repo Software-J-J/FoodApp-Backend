@@ -10,7 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-import { DeliveryMethod, UserRoles } from '@prisma/client';
+import { DeliveryMethod, RoleEnum } from '@prisma/client';
 
 export class RegisterUserDto {
   @IsString()
@@ -35,11 +35,11 @@ export class RegisterUserDto {
   @MaxLength(50)
   address: string;
 
-  @IsEnum(UserRoles, {
+  @IsEnum(RoleEnum, {
     each: true,
-    message: `Valid roles are ${Object.values(UserRoles).join(', ')}`,
+    message: `Valid roles are ${Object.values(RoleEnum).join(', ')}`,
   })
-  roles: UserRoles[] = [UserRoles.USER];
+  roles: RoleEnum[] = [RoleEnum.USER];
 
   @IsEnum(DeliveryMethod, {
     each: true,

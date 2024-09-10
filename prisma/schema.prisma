@@ -13,107 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  status   Boolean   @default(true)
-  products Product[]
-}
-
-model Product {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String
-  price       Int
-  image       String
-  status      Boolean @default(true)
-
-  Business   Business? @relation(fields: [businessId], references: [id])
-  businessId String?
-
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum OrderStatus {
-  PENDING
-  PAID
-  DELIVERED
-  CANCELLED
-}
-
-enum UserRoles {
-  DESARROLLADOR
-  ADMINISTRADOR
-  CAJA
-  COCINA
-  CADETE
-  USER
-}
-
-enum DeliveryMethod {
-  PICKUP
-  DELIVERY
-}
-
-enum DayOfWeek {
-  LUNES
-  MARTES
-  MIERCOLES
-  JUEVES
-  VIERNES
-  SABADO
-  DOMINGO
-}
-
-model Order {
-  id             String      @id @default(uuid())
-  totalAmount    Float
-  totalItems     Int
-  status         OrderStatus
-  paid           Boolean     @default(false)
-  paidAt         DateTime?
-  stripeChargeId String?
-  createdAt      DateTime    @default(now())
-  updateAt       DateTime    @updatedAt
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id])
-
-  guestName      String? // Para usuarios no autenticados
-  guestPhone     String?
-  guestAddress   String?
-  deliveryMethod DeliveryMethod
-
-  OrderItem    OrderItem[]
-  OrderReceipt OrderReceipt?
-}
-
-model OrderItem {
-  id        String @id @default(uuid())
-  productId Int
-  quantity  Int
-  price     Float
-
-  Order   Order?  @relation(fields: [orderId], references: [id])
-  orderId String?
-}
-
-model OrderReceipt {
-  id String @id @default(uuid())
-
-  order   Order  @relation(fields: [orderId], references: [id])
-  orderId String @unique //relacion uno a uno
-
-  receiptUrl String
-
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
-}
-
 model User {
   id             String          @id @default(uuid())
   email          String          @unique
@@ -125,12 +24,23 @@ model User {
   status         Boolean         @default(true)
 
   orders Order[]
-  roles  UserRoles[]
+  roles  RoleEnum[]
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  Business   Business? @relation(fields: [businessId], references: [id])
-  businessId String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  Business      Business   @relation(fields: [businessId], references: [id])
+  businessId    String
+  rolesAssigned UserRole[]
+
+  @@index([businessId])
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  role      RoleEnum
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Business {
@@ -154,12 +64,132 @@ model Business {
 
 model OpeningHours {
   id         String    @id @default(uuid())
-  dayOfWeek  DayOfWeek // Usando el enum para el día de la semana
-  openTime   String // Hora de apertura (en formato HH:MM)
-  closeTime  String // Hora de cierre (en formato HH:MM)
+  dayOfWeek  DayOfWeek
+  openTime   String
+  closeTime  String
   Business   Business  @relation(fields: [businessId], references: [id])
   businessId String
+  holiday    Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  status   Boolean   @default(true)
+  products Product[]
+}
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String
+  price       Int
+  image       String
+  status      Boolean @default(true)
+
+  Business   Business? @relation(fields: [businessId], references: [id])
+  businessId String?
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([status])
+}
+
+model Order {
+  id             String      @id @default(uuid())
+  totalAmount    Float
+  totalItems     Int
+  status         OrderStatus
+  paid           Boolean     @default(false)
+  paidAt         DateTime?
+  stripeChargeId String?
+  createdAt      DateTime    @default(now())
+  updateAt       DateTime    @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  guestName      String? // Para usuarios no autenticados
+  guestPhone     String?
+  guestAddress   String?
+  deliveryMethod DeliveryMethod
+
+  OrderItem          OrderItem[]
+  OrderReceipt       OrderReceipt?
+  OrderStatusHistory OrderStatusHistory[]
+
+  @@index([status])
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  productId Int
+  quantity  Int
+  price     Float
+
+  Order   Order?  @relation(fields: [orderId], references: [id])
+  orderId String?
+
+  @@index([orderId])
+}
+
+model OrderReceipt {
+  id String @id @default(uuid())
+
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String @unique //relacion uno a uno
+
+  receiptUrl String
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(uuid())
+  orderId   String
+  status    OrderStatus
+  changedAt DateTime    @default(now())
+  changedBy String?
+  order     Order       @relation(fields: [orderId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  DELIVERED
+  CANCELLED
+}
+
+enum RoleEnum {
+  DESARROLLADOR
+  ADMINISTRADOR
+  CAJA
+  COCINA
+  CADETE
+  USER
+}
+
+enum DeliveryMethod {
+  PICKUP
+  DELIVERY
+}
+
+enum DayOfWeek {
+  LUNES
+  MARTES
+  MIERCOLES
+  JUEVES
+  VIERNES
+  SABADO
+  DOMINGO
 }
