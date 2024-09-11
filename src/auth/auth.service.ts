@@ -82,13 +82,42 @@ export class AuthService extends PrismaClient implements OnModuleInit {
           name: name,
           phone: phone,
           address: address,
-          roles: roles || [RoleEnum.USER],
           deliveryMethod: deliveryMethod,
           businessId: businessId,
         },
       });
 
+      const rolesArray = Array.isArray(roles) ? roles : [roles];
+
+      if (rolesArray.length > 0) {
+        await Promise.all(
+          rolesArray.map(async (role) => {
+            await this.userRole.create({
+              data: {
+                role: role,
+                userId: newUser.id,
+              },
+            });
+          }),
+        );
+      } else {
+        await this.userRole.create({
+          data: {
+            role: 'USER',
+            userId: newUser.id,
+          },
+        });
+      }
+
+      await this.user.update({
+        where: { id: newUser.id },
+        data: {
+          roles: rolesArray,
+        },
+      });
+
       const { password: _, ...rest } = newUser;
+      
       return {
         user: rest,
         token: await this.signJwt(rest),

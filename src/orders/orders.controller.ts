@@ -77,7 +77,13 @@ export class OrdersController {
   changeOrderStatus(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() changeOrderStatusDto: ChangeOrderStatusDto,
+    @User() user?: CurrentUser,
   ) {
-    return this.ordersService.changeStatus(id, changeOrderStatusDto);
+    return this.ordersService.changeStatus(id, changeOrderStatusDto, user);
+  }
+
+  @Get('id')
+  orderStatusHistory(@Param('id', ParseUUIDPipe) id: string) {
+    return this.ordersService.getOrderStatusHistory(id);
   }
 }

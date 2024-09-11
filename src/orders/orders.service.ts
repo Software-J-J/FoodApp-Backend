@@ -116,6 +116,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
         where: {
           status: orderPaginationDto.status,
         },
+        orderBy: { createdAt: 'desc' },
       }),
       meta: {
         total: totalPages,
@@ -180,7 +181,11 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
     return products;
   }
 
-  async changeStatus(id: string, changeOrderStatusDto: ChangeOrderStatusDto) {
+  async changeStatus(
+    id: string,
+    changeOrderStatusDto: ChangeOrderStatusDto,
+    user: any,
+  ) {
     const { status } = changeOrderStatusDto;
 
     const order = await this.findOne(id);
@@ -192,6 +197,22 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
     return this.order.update({
       where: { id },
       data: { status: status },
+    });
+
+    await this.orderStatusHistory.create({
+      data: {
+        orderId: id,
+        status: status,
+        changedAt: new Date(),
+        changedBy: user.id,
+      },
+    });
+  }
+
+  async getOrderStatusHistory(orderId: string) {
+    return await this.orderStatusHistory.findMany({
+      where: { orderId },
+      orderBy: { changedAt: 'desc' },
     });
   }
 }

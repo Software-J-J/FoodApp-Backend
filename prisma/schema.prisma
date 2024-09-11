@@ -18,9 +18,9 @@ model User {
   email          String          @unique
   name           String
   password       String
-  phone          String? // Campos opcionales
-  address        String? // Opcional para permitir que los usuarios elijan no guardarlo
-  deliveryMethod DeliveryMethod? // Puede ser algo como "pickup" o "delivery"
+  phone          String? 
+  address        String? 
+  deliveryMethod DeliveryMethod? 
   status         Boolean         @default(true)
 
   orders Order[]
@@ -121,7 +121,7 @@ model Order {
   userId String?
   user   User?   @relation(fields: [userId], references: [id])
 
-  guestName      String? // Para usuarios no autenticados
+  guestName      String? 
   guestPhone     String?
   guestAddress   String?
   deliveryMethod DeliveryMethod
@@ -150,7 +150,7 @@ model OrderReceipt {
   id String @id @default(uuid())
 
   order   Order  @relation(fields: [orderId], references: [id])
-  orderId String @unique //relacion uno a uno
+  orderId String @unique 
 
   receiptUrl String
 
