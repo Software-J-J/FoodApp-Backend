@@ -90,6 +90,7 @@ model Product {
   description String
   price       Int
   image       String
+  asset       Boolean @default(true)
   status      Boolean @default(true)
 
   Business   Business? @relation(fields: [businessId], references: [id])
@@ -103,6 +104,7 @@ model Product {
 
   @@index([categoryId])
   @@index([status])
+  @@index([asset])
 }
 
 model Order {

@@ -85,6 +85,7 @@ CREATE TABLE "Product" (
     "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "image" TEXT NOT NULL,
+    "asset" BOOLEAN NOT NULL DEFAULT true,
     "status" BOOLEAN NOT NULL DEFAULT true,
     "businessId" TEXT,
     "categoryId" INTEGER NOT NULL,
@@ -164,6 +165,9 @@ CREATE INDEX "Product_categoryId_idx" ON "Product"("categoryId");
 
 -- CreateIndex
 CREATE INDEX "Product_status_idx" ON "Product"("status");
+
+-- CreateIndex
+CREATE INDEX "Product_asset_idx" ON "Product"("asset");
 
 -- CreateIndex
 CREATE INDEX "Order_status_idx" ON "Order"("status");
