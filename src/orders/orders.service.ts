@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   HttpStatus,
   Injectable,
   Logger,
@@ -45,12 +44,14 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
             guestName: user.name,
             guestPhone: user.phone,
             guestAddress: user.address,
+            businessId: user.businessId, // Asegúrate de pasar el businessId del usuario
           }
         : {
             userId: null,
             guestName: createOrderDto.name,
             guestPhone: createOrderDto.phone,
             guestAddress: createOrderDto.address,
+            businessId: createOrderDto.businessId, // Si no hay usuario, obtener businessId del DTO
           };
 
       const order = await this.order.create({
@@ -90,6 +91,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
           name: products.find((product) => product.id === orderItem.productId)
             .name,
         })),
+        orderNumber: order.orderNumber,
       };
     } catch (error) {
       throw new NotFoundException({

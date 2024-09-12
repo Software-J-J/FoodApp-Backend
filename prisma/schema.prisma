@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,9 +12,9 @@ model User {
   email          String          @unique
   name           String
   password       String
-  phone          String? 
-  address        String? 
-  deliveryMethod DeliveryMethod? 
+  phone          String?
+  address        String?
+  deliveryMethod DeliveryMethod?
   status         Boolean         @default(true)
 
   orders Order[]
@@ -62,6 +56,8 @@ model Business {
   products     Product[]
   users        User[]
   OpeningHours OpeningHours[]
+  Order        Order[]
+  Category     Category[]
 }
 
 model OpeningHours {
@@ -78,10 +74,15 @@ model OpeningHours {
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  status   Boolean   @default(true)
+  id         Int     @id @default(autoincrement())
+  name       String
+  status     Boolean @default(true)
+  businessId String
+
+  business Business  @relation(fields: [businessId], references: [id])
   products Product[]
+
+  @@unique([name, businessId])
 }
 
 model Product {
@@ -121,17 +122,22 @@ model Order {
   userId String?
   user   User?   @relation(fields: [userId], references: [id])
 
-  guestName      String? 
+  guestName      String?
   guestPhone     String?
   guestAddress   String?
   deliveryMethod DeliveryMethod
 
+  orderNumber Int @default(autoincrement())
+
   OrderItem          OrderItem[]
   OrderReceipt       OrderReceipt?
   OrderStatusHistory OrderStatusHistory[]
+  Business           Business?            @relation(fields: [businessId], references: [id])
+  businessId         String?
 
   @@index([status])
   @@index([userId])
+  @@index([orderNumber]) // Índice para garantizar que el número de orden sea único por negocio
 }
 
 model OrderItem {
@@ -150,7 +156,7 @@ model OrderReceipt {
   id String @id @default(uuid())
 
   order   Order  @relation(fields: [orderId], references: [id])
-  orderId String @unique 
+  orderId String @unique
 
   receiptUrl String
 

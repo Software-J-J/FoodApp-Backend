@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
+import { CurrentUser } from 'src/auth/interface';
 
 @Injectable()
 export class CategoryService extends PrismaClient implements OnModuleInit {
@@ -15,10 +16,13 @@ export class CategoryService extends PrismaClient implements OnModuleInit {
     this.$connect();
     this.logger.log('Category DB Connect');
   }
-  async create(createCategoryDto: CreateCategoryDto) {
+
+  async create(createCategoryDto: CreateCategoryDto, user: CurrentUser) {
     return await this.category.create({
       data: {
-        ...createCategoryDto,
+        name: createCategoryDto.name,
+        status: createCategoryDto.status ?? true,
+        businessId: user.businessId,
       },
     });
   }
@@ -36,6 +40,9 @@ export class CategoryService extends PrismaClient implements OnModuleInit {
         products: {
           select: {
             name: true,
+            Business: true,
+            price: true,
+            image: true,
           },
         },
       },

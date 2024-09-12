@@ -7,18 +7,34 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { AuthGuard, RolesGuard } from 'src/auth/guards';
+import { Roles, User } from 'src/auth/decorators';
+import { RolesUserList } from 'src/auth/enum/roles-enum';
+import { CurrentUser } from 'src/auth/interface';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(
+    RolesUserList.DESARROLLADOR,
+    RolesUserList.ADMINISTRADOR,
+    RolesUserList.CAJA,
+    RolesUserList.USER,
+    RolesUserList.COCINA,
+  )
+  create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @User() user?: CurrentUser,
+  ) {
+    return this.categoryService.create(createCategoryDto, user);
   }
 
   @Get()

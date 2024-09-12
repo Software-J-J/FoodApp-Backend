@@ -40,4 +40,7 @@ export class CreateOrderDto {
     message: `Valid delivery methods are ${Object.values(DeliveryMethod).join(', ')}`,
   })
   deliveryMethod: DeliveryMethod;
+
+  @IsString()
+  businessId: string;
 }
