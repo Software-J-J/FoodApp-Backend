@@ -20,8 +20,8 @@ model User {
   orders Order[]
   roles  RoleEnum[]
 
-  Business   Business @relation(fields: [businessId], references: [id])
-  businessId String
+  Business   Business? @relation(fields: [businessId], references: [id])
+  businessId String?
 
   rolesAssigned UserRole[]
 
