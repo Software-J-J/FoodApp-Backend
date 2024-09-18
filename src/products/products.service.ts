@@ -23,7 +23,12 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     const { category, businessId, ...rest } = createProductDto;
 
     const categoryRecord = await this.category.findUnique({
-      where: { name: category },
+      where: {
+        name_businessId: {
+          name: category,
+          businessId: businessId,
+        },
+      },
     });
 
     if (!categoryRecord) {
@@ -104,7 +109,12 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
 
     if (category) {
       const categoryRecord = await this.category.findUnique({
-        where: { name: category },
+        where: {
+          name_businessId: {
+            name: category,
+            businessId: businessId,
+          },
+        },
       });
 
       if (!categoryRecord) {
