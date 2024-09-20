@@ -176,10 +176,12 @@ model OrderStatusHistory {
 enum OrderStatus {
   PENDING
   PAID
+  PREPARED
   DELIVERED
   CANCELLED
+  ACCEPTED
+  COMPLETED
 }
-
 enum RoleEnum {
   DESARROLLADOR
   ADMINISTRADOR
