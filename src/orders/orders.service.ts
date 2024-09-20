@@ -196,11 +196,6 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
       return order;
     }
 
-    return this.order.update({
-      where: { id },
-      data: { status: status },
-    });
-
     await this.orderStatusHistory.create({
       data: {
         orderId: id,
@@ -208,6 +203,11 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
         changedAt: new Date(),
         changedBy: user.id,
       },
+    });
+
+    return this.order.update({
+      where: { id },
+      data: { status: status },
     });
   }
 

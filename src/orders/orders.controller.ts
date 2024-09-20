@@ -82,7 +82,7 @@ export class OrdersController {
     return this.ordersService.changeStatus(id, changeOrderStatusDto, user);
   }
 
-  @Get('id')
+  @Get('status/:id')
   orderStatusHistory(@Param('id', ParseUUIDPipe) id: string) {
     return this.ordersService.getOrderStatusHistory(id);
   }
