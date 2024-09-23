@@ -10,6 +10,7 @@ import {
   ChangeOrderStatusDto,
   CreateOrderDto,
   OrderPaginationDto,
+  PaidOrderDto,
 } from './dto';
 
 @Injectable()
@@ -216,5 +217,16 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
       where: { orderId },
       orderBy: { changedAt: 'desc' },
     });
+  }
+
+  async paidOrder(id: string, paidOrderDto: PaidOrderDto) {
+    const updatePaidOrder = await this.order.update({
+      where: {
+        id: id,
+      },
+      data: { paid: paidOrderDto.paid, paidAt: new Date() },
+    });
+
+    return updatePaidOrder;
   }
 }

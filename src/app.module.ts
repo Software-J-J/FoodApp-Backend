@@ -7,8 +7,19 @@ import { ReportsModule } from './reports/reports.module';
 import { PrinterModule } from './printer/printer.module';
 import { BusinessModule } from './business/business.module';
 import { CategoryModule } from './category/category.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [ProductsModule, CloudinaryModule, OrdersModule, AuthModule, ReportsModule, PrinterModule, BusinessModule, CategoryModule],
+  imports: [
+    ProductsModule,
+    CloudinaryModule,
+    OrdersModule,
+    AuthModule,
+    ReportsModule,
+    PrinterModule,
+    BusinessModule,
+    CategoryModule,
+    ChatModule,
+  ],
 })
 export class AppModule {}

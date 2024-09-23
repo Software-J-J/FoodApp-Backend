@@ -6,7 +6,6 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
-  UseGuards,
   BadRequestException,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
@@ -14,11 +13,13 @@ import {
   ChangeOrderStatusDto,
   CreateOrderDto,
   OrderPaginationDto,
+  PaidOrderDto,
 } from './dto';
 import { Roles, User } from 'src/auth/decorators';
 import { CurrentUser } from 'src/auth/interface';
 import { AuthGuard, OrderAuthGuard, RolesGuard } from 'src/auth/guards';
 import { RolesUserList } from 'src/auth/enum/roles-enum';
+import { UseGuards } from '@nestjs/common/decorators/core/use-guards.decorator';
 
 @Controller('orders')
 export class OrdersController {
@@ -85,5 +86,13 @@ export class OrdersController {
   @Get('status/:id')
   orderStatusHistory(@Param('id', ParseUUIDPipe) id: string) {
     return this.ordersService.getOrderStatusHistory(id);
+  }
+
+  @Patch('paid/:id')
+  changePaidorder(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() paidOrderDto: PaidOrderDto,
+  ) {
+    return this.ordersService.paidOrder(id, paidOrderDto);
   }
 }

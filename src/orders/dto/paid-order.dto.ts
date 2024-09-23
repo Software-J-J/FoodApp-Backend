@@ -1,14 +1,13 @@
-import { IsString, IsUrl, IsUUID } from 'class-validator';
+import { IsBoolean, IsString, IsUrl, IsUUID } from 'class-validator';
 
 export class PaidOrderDto {
-  @IsString()
-  stripePaymentId: string;
+  // @IsString()
+  // stripePaymentId: string;
 
-  @IsString()
-  @IsUUID()
-  orderId: string;
+  @IsBoolean()
+  paid: boolean;
 
-  @IsString()
-  @IsUrl()
-  receiptUrl: string;
+  // @IsString()
+  // @IsUrl()
+  // receiptUrl: string;
 }
