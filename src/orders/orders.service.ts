@@ -12,6 +12,7 @@ import {
   OrderPaginationDto,
   PaidOrderDto,
 } from './dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class OrdersService extends PrismaClient implements OnModuleInit {
@@ -21,6 +22,11 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
     this.$connect();
     this.logger.log('Orders Database Connect.');
   }
+
+  constructor(private notificacionService: NotificationsService) {
+    super();
+  }
+
   async create(createOrderDto: CreateOrderDto, user?: any) {
     try {
       const productIds = createOrderDto.items.map((item) => item.productId);
@@ -84,6 +90,11 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
           },
         },
       });
+
+      this.notificacionService.sendNotificacionToAdmins(
+        createOrderDto.businessId,
+        order,
+      );
 
       return {
         ...order,

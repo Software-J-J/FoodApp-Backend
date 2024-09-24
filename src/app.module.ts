@@ -8,6 +8,7 @@ import { PrinterModule } from './printer/printer.module';
 import { BusinessModule } from './business/business.module';
 import { CategoryModule } from './category/category.module';
 import { ChatModule } from './chat/chat.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ChatModule } from './chat/chat.module';
     BusinessModule,
     CategoryModule,
     ChatModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}
