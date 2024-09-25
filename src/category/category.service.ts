@@ -40,9 +40,9 @@ export class CategoryService extends PrismaClient implements OnModuleInit {
         products: {
           select: {
             name: true,
-            Business: true,
             price: true,
-            image: true,
+            asset: true,
+            status: true,
           },
         },
       },
