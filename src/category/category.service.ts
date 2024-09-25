@@ -27,9 +27,9 @@ export class CategoryService extends PrismaClient implements OnModuleInit {
     });
   }
 
-  async findAll() {
+  async findAll(businessId: string) {
     return await this.category.findMany({
-      where: { status: true },
+      where: { businessId: businessId, status: true },
     });
   }
 
@@ -39,10 +39,12 @@ export class CategoryService extends PrismaClient implements OnModuleInit {
       include: {
         products: {
           select: {
+            id: true,
             name: true,
             price: true,
             asset: true,
             status: true,
+            image: true,
           },
         },
       },

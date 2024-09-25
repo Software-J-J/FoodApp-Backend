@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -37,12 +38,12 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto, user);
   }
 
-  @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  @Get(':businessId')
+  findAll(@Param('businessId', ParseUUIDPipe) businessId: string) {
+    return this.categoryService.findAll(businessId);
   }
 
-  @Get(':id')
+  @Get('id/:id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoryService.findOne(id);
   }
