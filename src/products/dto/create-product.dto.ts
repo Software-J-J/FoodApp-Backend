@@ -36,9 +36,12 @@ export class CreateProductDto {
   @IsUrl()
   public image: string;
 
-
   @IsOptional()
   businessId: string;
+
+  @IsBoolean()
+  @IsOptional()
+  public asset: boolean;
 
   @IsBoolean()
   @IsOptional()
