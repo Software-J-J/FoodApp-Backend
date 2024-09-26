@@ -34,15 +34,16 @@ export class AuthController {
     return this.authService.verifyToken(token);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
   @Patch(':id')
   updateUser(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.authService.update(id, updateUserDto);
+  }
+
+  @Get(':id')
+  findAll(@Param('id', ParseUUIDPipe) id: string) {
+    return this.authService.findAll(id);
   }
 }

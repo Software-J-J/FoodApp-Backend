@@ -117,7 +117,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       });
 
       const { password: _, ...rest } = newUser;
-      
+
       return {
         user: rest,
         token: await this.signJwt(rest),
@@ -176,7 +176,9 @@ export class AuthService extends PrismaClient implements OnModuleInit {
     });
   }
 
-  async findAll() {
-    return await this.user.findMany();
+  async findAll(id: string) {
+    return await this.user.findMany({
+      where: { businessId: id },
+    });
   }
 }
