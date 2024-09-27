@@ -11,8 +11,9 @@ import {
 import { AuthService } from './auth.service';
 import { LoginUserDto, RegisterUserDto, UpdateUserDto } from './dto';
 import { AuthGuard } from './guards/auth.guard';
-import { Token, User } from './decorators';
+import { Roles, Token, User } from './decorators';
 import { CurrentUser } from './interface';
+import { RolesUserList } from './enum/roles-enum';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +35,8 @@ export class AuthController {
     return this.authService.verifyToken(token);
   }
 
+  @UseGuards(AuthGuard)
+  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
   @Patch(':id')
   updateUser(
     @Param('id', ParseUUIDPipe) id: string,
@@ -42,6 +45,8 @@ export class AuthController {
     return this.authService.update(id, updateUserDto);
   }
 
+  @UseGuards(AuthGuard)
+  @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
   @Get(':id')
   findAll(@Param('id', ParseUUIDPipe) id: string) {
     return this.authService.findAll(id);
