@@ -23,6 +23,8 @@ COPY --from=deps /usr/src/app/node_modules ./node_modules
 #Copiar todo el codigo fuente de la app
 COPY . .
 
+COPY ./fonts /usr/src/app/fonts
+
 RUN npx prisma generate
 
 #RUN npm run test
@@ -41,6 +43,7 @@ COPY --from=build /usr/src/app/node_modules ./node_modules
 
 #Copior la carpeta de DIST
 COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/fonts ./fonts
 
 ENV NODE_ENV=production
 
