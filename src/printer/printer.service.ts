@@ -12,6 +12,7 @@ const fonts = {
   },
 };
 
+
 @Injectable()
 export class PrinterService {
   private printer = new PdfPrinter(fonts);

@@ -58,11 +58,18 @@ export class BusinessController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(RolesUserList.DESARROLLADOR, RolesUserList.ADMINISTRADOR)
   @Patch(':id')
-  update(
+  @UseInterceptors(FileInterceptor('logo'))
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateBusinessDto: UpdateBusinessDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.businessService.update(updateBusinessDto.id, updateBusinessDto);
+    const uploadResult = await this.cloudinaryService.uploadImage(file);
+    updateBusinessDto.logo = uploadResult.url;
+    console.log(uploadResult);
+    console.log(updateBusinessDto);
+
+    return this.businessService.update(id, updateBusinessDto);
   }
 
   @UseGuards(AuthGuard, RolesGuard)

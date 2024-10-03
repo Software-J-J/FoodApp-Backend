@@ -80,7 +80,7 @@ export const orderReports = async (
         ],
       },
       {
-        text: `Orden # ${order.id}`,
+        text: `Orden # ${order.orderNumber}`,
         style: 'header',
       },
       {

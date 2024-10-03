@@ -105,7 +105,7 @@ export class BusinessService extends PrismaClient implements OnModuleInit {
   }
 
   async update(id: string, updateBusinessDto: UpdateBusinessDto) {
-    const { id: _, ...data } = updateBusinessDto;
+    const { ...data } = updateBusinessDto;
 
     await this.findOne(id);
 
